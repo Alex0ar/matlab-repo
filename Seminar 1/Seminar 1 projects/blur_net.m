@@ -24,7 +24,7 @@ function fo = blur_net(inputFile)
         [X, Y] = meshgrid(x, y);
         mask = (X - centerX).^2 + (Y - centerY).^2 <= radius ^ 2;
         rectangle = photo(startY:stopY, startX:stopX, :);
-        photo(startY:stopY, startX:stopX, :) = blurr_area(rectangle);
+        photo(startY:stopY, startX:stopX, :) = blurr_area(rectangle, mask);
     end
     figure
         imshow(photo);
@@ -32,12 +32,14 @@ function fo = blur_net(inputFile)
     imwrite(photo, fo);
 end
 
-function area = blurr_area(area)
+function area = blurr_area(area, mask)
     [m, n, p] = size(area);
+    sigma = unifrnd(0, 2000, m, n);
+    noise = normrnd(0, sigma, m, n);
     for k = 1:p
-        sigma = unifrnd(0, 150, m, n);
-        noise = normrnd(0, sigma, m, n);
-        area = uint8(double(area) + noise);
+        currentPlane = area(:, :, k);
+        currentPlane(mask) = uint8(double(currentPlane(mask)) + noise(mask));
+        area(:, :, k) = currentPlane;
     end
 end
 

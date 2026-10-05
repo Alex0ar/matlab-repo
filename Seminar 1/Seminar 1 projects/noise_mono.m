@@ -19,3 +19,5 @@ function [fo] = noise_mono(fi, s_max, tip)
         imwrite(new_photo, fo, tip);
     end
 end
+
+
